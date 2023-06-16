@@ -39,8 +39,8 @@ class _LoginState extends State<Login> {
         if (response.statusCode == 200) {
           print(resbody['token']);
           prefs.setString("token", resbody['token']);
-          prefs.setString("token", resbody['user']['name']);
-          prefs.setString("token", resbody['user']['email']);
+          prefs.setString("nama", resbody['user']['name']);
+          prefs.setString("email", resbody['user']['email']);
           Get.off(const Homepage());
         } else {
           Get.snackbar("Gagal", resbody['message']);

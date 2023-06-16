@@ -1,8 +1,18 @@
+import 'dart:convert';
+
+import 'package:customizable_counter/customizable_counter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:warung_dapoer/pages/homepage.dart';
+import 'package:warung_dapoer/utils/api_url.dart';
+import 'package:warung_dapoer/widget/stepper.dart';
 
 class DetailMenu extends StatefulWidget {
   final String gambar;
@@ -23,6 +33,43 @@ class DetailMenu extends StatefulWidget {
 }
 
 class _DetailMenuState extends State<DetailMenu> {
+  int jumlah_pesanan = 0;
+
+  void tambah_pesanan(
+      String nama_barang, int jumlah_pesanan, harga, barang_id) async {
+    if (jumlah_pesanan == 0) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Mohon isi jumlah pemesanan")));
+      // Get.snackbar("Ooppss", "Mohon isi jumlah pemesanan");
+    } else {
+      final body = {
+        "nama_barang": nama_barang,
+        "harga": harga,
+        "quantity": jumlah_pesanan,
+        "barang_id": barang_id
+      };
+      var url = "$base_url/transaksi/insert";
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      var token = prefs.getString("token");
+      final header = {
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+        "content-type": "application/json",
+      };
+      http.Response response = await http.post(Uri.parse(url),
+          body: jsonEncode(body),
+          headers: header,
+          encoding: Encoding.getByName("utf-8"));
+      var resbody = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        // print(response.body);
+        Get.off(const Homepage());
+      } else {
+        print(response.body);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +79,7 @@ class _DetailMenuState extends State<DetailMenu> {
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(
-            Icons.arrow_back,
+            CupertinoIcons.chevron_back,
             color: Color(0xFF545D68),
           ),
           onPressed: () {
@@ -40,21 +87,12 @@ class _DetailMenuState extends State<DetailMenu> {
           },
         ),
         title: Text(
-          'Pesan',
+          'Detail Menu',
           style: TextStyle(
             fontFamily: GoogleFonts.poppins().fontFamily,
             color: const Color(0xFF545D68),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.notifications_none,
-              color: Color(0xFF545D68),
-            ),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: ListView(
         children: [
@@ -66,7 +104,7 @@ class _DetailMenuState extends State<DetailMenu> {
               style: TextStyle(
                 fontFamily: GoogleFonts.poppins().fontFamily,
                 fontSize: 40,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 color: const Color(0xFFF17532),
               ),
             ),
@@ -133,6 +171,37 @@ class _DetailMenuState extends State<DetailMenu> {
               ),
             ),
           ),
+          SizedBox(height: 28),
+          Center(
+              child: CustomizableCounter(
+            borderColor: const Color(0xFFF17532),
+            borderWidth: 5,
+            borderRadius: 100,
+            showButtonText: false,
+            backgroundColor: const Color(0xFFF17532),
+            buttonText: "Add Item",
+            textColor: Colors.white,
+            textSize: 15,
+            count: 0,
+            step: 1,
+            minCount: 0,
+            incrementIcon: const Icon(
+              CupertinoIcons.add,
+              color: Colors.white,
+            ),
+            decrementIcon: const Icon(
+              CupertinoIcons.minus,
+              color: Colors.white,
+            ),
+            onCountChange: (count) {
+              setState(() {
+                jumlah_pesanan = count.toInt();
+              });
+              print(jumlah_pesanan);
+            },
+            onIncrement: (count) {},
+            onDecrement: (count) {},
+          )),
           SizedBox(height: 16),
           Center(
             child: Container(
@@ -145,12 +214,9 @@ class _DetailMenuState extends State<DetailMenu> {
               child: Center(
                 child: InkWell(
                   onTap: () async {
-                    print("pesan cuy");
-                    // await FlutterLaunch.launchWhatsapp(
-                    //   phone: '6285640899224',
-                    //   message:
-                    //       'Hi Bahri Cakery,Saya mau order $nama_menu untuk hari ini, apa bisa diantar kerumah?',
-                    // );
+                    // print("pesan cuy");
+                    tambah_pesanan(widget.nama_menu, jumlah_pesanan,
+                        widget.harga, widget.id);
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

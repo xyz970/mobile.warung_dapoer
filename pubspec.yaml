@@ -43,6 +43,9 @@ dependencies:
   font_awesome_flutter: 
   intl: 
   flutter_screenutil:
+  customizable_counter:
+  counter: ^0.2.2
+  counter_button: ^1.0.1
 
 dev_dependencies:
   flutter_test:

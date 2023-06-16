@@ -6,6 +6,8 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:warung_dapoer/pages/cart.dart';
 import 'package:warung_dapoer/pages/detail_menu.dart';
 import 'package:warung_dapoer/pages/login.dart';
 import 'package:http/http.dart' as http;
@@ -24,6 +26,7 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   List menu = [];
+  String nama = '';
 
   @override
   void initState() {
@@ -34,15 +37,25 @@ class _HomepageState extends State<Homepage> {
 
   Future getDataMenu() async {
     var url = "$base_url/barang";
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     final header = {"Accept": "application/json"};
     http.Response response = await http.get(Uri.parse(url), headers: header);
     if (response.statusCode == 200) {
       var resbody = jsonDecode(response.body);
       setState(() {
         menu = resbody['data'];
+        nama = prefs.getString("nama") ?? '';
       });
       print(menu);
     }
+  }
+
+  void logout() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("token");
+    prefs.remove("nama");
+    prefs.remove("email");
+    await Get.offAll(const Login());
   }
 
   Widget build(BuildContext context) {
@@ -50,6 +63,14 @@ class _HomepageState extends State<Homepage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFFAFAFA),
         elevation: 0,
+        leading: IconButton(
+            icon: Icon(
+              Icons.logout,
+              color: Color(0xFF3a3737),
+            ),
+            onPressed: () {
+              logout();
+            }),
         title: Text(
           "Home",
           style: TextStyle(
@@ -61,11 +82,11 @@ class _HomepageState extends State<Homepage> {
         actions: <Widget>[
           IconButton(
               icon: Icon(
-                Icons.notifications_none,
+                Icons.shopping_cart,
                 color: Color(0xFF3a3737),
               ),
               onPressed: () {
-                Navigator.push(context, ScaleRoute(page: Login()));
+                Get.to(const Cart());
               })
         ],
       ),
@@ -74,7 +95,7 @@ class _HomepageState extends State<Homepage> {
           Padding(
             padding: EdgeInsets.only(left: 10, top: 10),
             child: Text(
-              "Apa yang anda inginkan?",
+              "Halo $nama",
               style: TextStyle(
                   color: Color(0xFF3a3737),
                   fontSize: 12,
@@ -125,7 +146,7 @@ class _HomepageState extends State<Homepage> {
       //             "https://cdn.pixabay.com/photo/2016/09/18/23/23/sugarloaf-mountain-1679285__340.jpg"),
       //   ],
       // ),
-      bottomNavigationBar: BottomNavBarWidget(),
+      // bottomNavigationBar: BottomNavBarWidget(),
     );
   }
 }

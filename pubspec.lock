@@ -81,6 +81,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
+  counter:
+    dependency: "direct main"
+    description:
+      name: counter
+      sha256: "501cd9478339f92aed9d339112cc81cb994a078a903112ebcd0a47db7c557380"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.2"
+  counter_button:
+    dependency: "direct main"
+    description:
+      name: counter_button
+      sha256: "36992a764f513c9780195ec4613676d5d3dbe1685ccdb702bd1de7eb2cfe72d9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   crypto:
     dependency: transitive
     description:
@@ -97,6 +113,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  customizable_counter:
+    dependency: "direct main"
+    description:
+      name: customizable_counter
+      sha256: b9fd2052295ce9b61be167713211661541d4212fbcf6367731095fad3c38554f
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   fake_async:
     dependency: transitive
     description:
