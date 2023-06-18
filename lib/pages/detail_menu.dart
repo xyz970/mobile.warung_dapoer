@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:customizable_counter/customizable_counter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -119,12 +120,9 @@ class _DetailMenuState extends State<DetailMenu> {
               child: Container(
                 height: 200,
                 width: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(32),
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: NetworkImage(widget.gambar),
-                  ),
+                child: CachedNetworkImage(
+                  imageUrl: widget.gambar,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),

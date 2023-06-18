@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:customizable_counter/customizable_counter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
@@ -166,10 +167,11 @@ class _CartState extends State<Cart> {
                                   leading: Container(
                                     width: 100,
                                     height: 100,
-                                    decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: NetworkImage(
-                                                "https://cdn.pixabay.com/photo/2018/02/01/14/09/yellow-3123271_960_720.jpg"))),
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          "$image_url/storage/${data[index]['menu']['barang']}",
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                   title: Text(
                                     data[index]['nama_barang'],
@@ -337,10 +339,11 @@ class _CartState extends State<Cart> {
                       leading: Container(
                         width: 100,
                         height: 100,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    "https://cdn.pixabay.com/photo/2018/02/01/14/09/yellow-3123271_960_720.jpg"))),
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              "$image_url/storage/${data[index]['menu']['barang']}",
+                          fit: BoxFit.cover,
+                        ),
                       ),
                       title: Text(
                         data[index]['nama_barang'],

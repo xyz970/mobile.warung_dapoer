@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -60,94 +61,72 @@ class _HomepageState extends State<Homepage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFAFAFA),
-        elevation: 0,
-        leading: IconButton(
-            icon: Icon(
-              Icons.logout,
-              color: Color(0xFF3a3737),
-            ),
-            onPressed: () {
-              logout();
-            }),
-        title: Text(
-          "Home",
-          style: TextStyle(
-              color: Color(0xFF3a3737),
-              fontSize: 20,
-              fontFamily: GoogleFonts.poppins().fontFamily,
-              fontWeight: FontWeight.bold),
-        ),
-        actions: <Widget>[
-          IconButton(
+        appBar: AppBar(
+          backgroundColor: const Color(0xFFFAFAFA),
+          elevation: 0,
+          leading: IconButton(
               icon: Icon(
-                Icons.shopping_cart,
+                Icons.logout,
                 color: Color(0xFF3a3737),
               ),
               onPressed: () {
-                Get.to(const Cart());
-              })
-        ],
-      ),
-      body: ListView(
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 10, top: 10),
-            child: Text(
-              "Halo $nama",
-              style: TextStyle(
-                  color: Color(0xFF3a3737),
-                  fontSize: 12,
-                  fontFamily: GoogleFonts.poppins().fontFamily,
-                  fontWeight: FontWeight.bold),
-            ),
+                logout();
+              }),
+          title: Text(
+            "Home",
+            style: TextStyle(
+                color: Color(0xFF3a3737),
+                fontSize: 20,
+                fontFamily: GoogleFonts.poppins().fontFamily,
+                fontWeight: FontWeight.bold),
           ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2),
-                itemCount: menu.length,
-                itemBuilder: (_, index) {
-                  return CustomCard(
-                      id: menu[index]['id'],
-                      keterangan: menu[index]['keterangan'],
-                      harga: menu[index]['harga'],
-                      title: menu[index]['nama_barang'],
-                      image:
-                          "https://cdn.pixabay.com/photo/2018/02/01/14/09/yellow-3123271_960_720.jpg");
-                }),
-          )
-        ],
-      ),
-      // body: GridView.count(
-      //   //widget yang akan ditampilkan dalam 1 baris adalah 2
-      //   crossAxisCount: 2,
-      //   children: [
-      //     //card ditampilkan disini
-      //     //saya membuat custom card di bawah agar kodingan tidak terlalu panjang
-      //     CustomCard(
-      //         title: "Judul Card Kedua",
-      //         image:
-      //             "https://cdn.pixabay.com/photo/2018/02/01/14/09/yellow-3123271_960_720.jpg"),
-      //     CustomCard(
-      //         title: "Judul Card Ketiga",
-      //         image:
-      //             "https://cdn.pixabay.com/photo/2016/08/27/14/38/mountains-1624284__340.jpg"),
-      //     CustomCard(
-      //         title: "Judul Card Keempat",
-      //         image:
-      //             "https://cdn.pixabay.com/photo/2016/11/29/02/23/cliffs-1866832__340.jpg"),
-      //     CustomCard(
-      //         title: "Judul Card Kelima",
-      //         image:
-      //             "https://cdn.pixabay.com/photo/2016/09/18/23/23/sugarloaf-mountain-1679285__340.jpg"),
-      //   ],
-      // ),
-      // bottomNavigationBar: BottomNavBarWidget(),
-    );
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(
+                  Icons.shopping_cart,
+                  color: Color(0xFF3a3737),
+                ),
+                onPressed: () {
+                  Get.to(const Cart());
+                })
+          ],
+        ),
+        body: RefreshIndicator(
+            onRefresh: getDataMenu,
+            child: ListView(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 10, top: 10),
+                  child: Text(
+                    "Halo $nama",
+                    style: TextStyle(
+                        color: Color(0xFF3a3737),
+                        fontSize: 12,
+                        fontFamily: GoogleFonts.poppins().fontFamily,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2),
+                      itemCount: menu.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (_, index) {
+                        return CustomCard(
+                            id: menu[index]['id'],
+                            keterangan: menu[index]['keterangan'],
+                            harga: menu[index]['harga'],
+                            title: menu[index]['nama_barang'],
+                            image:
+                                "$image_url/storage/${menu[index]['barang']}");
+                      }),
+                )
+              ],
+            )));
   }
 }
 
@@ -171,37 +150,41 @@ class CustomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Get.to(DetailMenu(
-          gambar: image,
-          harga: harga,
-          nama_menu: title,
-          id: id,
-          keterangan: keterangan,
-        ));
-      },
-      child: Padding(
-        padding: const EdgeInsets.only(top: 10, left: 5, right: 5),
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          //menambahkan bayangan
-          elevation: 2,
-          child: Container(
-            width: MediaQuery.of(context).size.width / 3,
-            height: MediaQuery.of(context).size.height / 4,
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      child: GestureDetector(
+        onTap: () {
+          Get.to(DetailMenu(
+            gambar: image,
+            harga: harga,
+            nama_menu: title,
+            id: id,
+            keterangan: keterangan,
+          ));
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(top: 10, left: 5, right: 5),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            //menambahkan bayangan
+            elevation: 2,
             child: ListView(
               physics: NeverScrollableScrollPhysics(),
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10), // Image border
                   child: SizedBox.fromSize(
+                    size: Size(100, 100),
                     // Image radius
                     child: Hero(
-                        tag: id,
-                        child: Image.network(image, fit: BoxFit.cover)),
+                      tag: id,
+                      child: CachedNetworkImage(
+                        imageUrl: image,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
                 Padding(
