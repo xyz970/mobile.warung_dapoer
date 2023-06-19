@@ -27,6 +27,11 @@ environment:
 # dependencies can be manually updated by changing the version numbers below to
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/icon.png"
+
 dependencies:
   flutter:
     sdk: flutter
@@ -47,6 +52,7 @@ dependencies:
   counter: ^0.2.2
   counter_button: ^1.0.1
   cached_network_image: ^3.2.3
+  
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +64,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
